@@ -2,14 +2,16 @@ from datetime import datetime
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy 
 from forms import RegistrationForm, LoginForm
+
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '2d5ca6681f533eeb43d8c4d92e3a9b87'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class User(db.model):
+class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), unique= True, nullable=False)
 	email = db.Column(db.String(120), unique= True, nullable=False)
@@ -18,10 +20,10 @@ class User(db.model):
 	posts = db.relationship('Post', backref='author', lazy=True)
 
 	def __repr__(self):
-		return"User('{self.username}'), '{self.email}', '{self.image_file}')"
+		return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 
-class Post(db.model):
+class Post(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(100), nullable=False)
 	date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow )
@@ -29,7 +31,7 @@ class Post(db.model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 	def __repr__(self):
-		return"User('{self.title}'), '{self.date_posted}'"
+		return f"User('{self.title}', '{self.date_posted}')"
 
 
 
